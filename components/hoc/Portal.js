@@ -9,11 +9,40 @@ class Portal extends Component {
     className: PropTypes.string,
     container: PropTypes.node,
     style: styleShape,
+  };
+
+  constructor(props) {
+    super(props);
+    this.el = getContainer(props.container);
   }
 
-  static defaultProps = {
-    className: '',
+  render() {
+    if (!this.props.children) return null;
+    return ReactDOM.createPortal(
+      (<div className={this.props.className} style={this.props.style}>
+        {this.props.children}
+      </div>),
+      this.el,
+    );
   }
+}
+
+function getContainer(container) {
+  const _container = typeof container === 'function' ? container() : container;
+  return ReactDOM.findDOMNode(_container) || document.body;
+}
+/*
+class Portal extends Component {
+  static propTypes = {
+    children: PropTypes.node,
+    className: PropTypes.string,
+    container: PropTypes.node,
+    style: styleShape
+  };
+
+  static defaultProps = {
+    className: ""
+  };
 
   componentDidMount() {
     this._renderOverlay();
@@ -41,8 +70,11 @@ class Portal extends Component {
   }
 
   getOverlayDOMNode() {
-    if (!this.isMounted()) { // eslint-disable-line
-      throw new Error('getOverlayDOMNode(): A component must be mounted to have a DOM node.');
+    if (!this.isMounted()) {
+      // eslint-disable-line
+      throw new Error(
+        "getOverlayDOMNode(): A component must be mounted to have a DOM node."
+      );
     }
 
     if (this._overlayInstance) {
@@ -69,7 +101,9 @@ class Portal extends Component {
     if (overlay !== null) {
       this._mountOverlayTarget();
       this._overlayInstance = ReactDOM.unstable_renderSubtreeIntoContainer(
-        this, overlay, this._overlayTarget,
+        this,
+        overlay,
+        this._overlayTarget
       );
     } else {
       this._unrenderOverlay();
@@ -86,7 +120,7 @@ class Portal extends Component {
 
   _mountOverlayTarget() {
     if (!this._overlayTarget) {
-      this._overlayTarget = document.createElement('div');
+      this._overlayTarget = document.createElement("div");
       this._portalContainerNode = getContainer(this.props.container);
       this._portalContainerNode.appendChild(this._overlayTarget);
     }
@@ -103,12 +137,13 @@ class Portal extends Component {
   render() {
     return null;
   }
-
 }
 
 function getContainer(container) {
-  const _container = typeof container === 'function' ? container() : container;
+  const _container = typeof container === "function" ? container() : container;
   return ReactDOM.findDOMNode(_container) || document.body;
 }
+
+*/
 
 export default Portal;
