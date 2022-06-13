@@ -24,7 +24,6 @@ const paths = {
   dest: './lib',
 }
 
-
 function js(cb) {
   gulp.src(paths.js.src)
     .pipe(babel())
@@ -34,41 +33,31 @@ function js(cb) {
 };
 
 function css(cb) {
-  // Copied from webpack/postcss.config.js
   const plugins = [
     require('postcss-import')({
-      root: path.join(__dirname, '../'),
-      path: path.join(__dirname, '../components')
+      root: __dirname,
+      path: [path.join(__dirname, './components')]
     }),
-    require('postcss-mixins'),
-    require('postcss-each'),
-    require('postcss-apply'),
-    require('postcss-preset-env')({
-      stage: 0, // required to get all features that were from cssnext
-      features: {
-        'custom-properties': {
-          preserve: false // required to output values instead of variables
-        },
-        'color-mod-function': true, // required to use color-mod()
-      }
-    }),
-    require('postcss-calc'), // required as postcss-preset-env doesn't have a reduce calc() funtion
-    require('postcss-normalize'),
-    require('postcss-reporter')({
-      clearReportedMessages: true
-    })
-  ]
+    require('postcss-mixins')(),
+    require('postcss-each')(),
+    require('postcss-apply')(),
+    require('postcss-nesting')(),
+    require('postcss-reporter')({ clearMessages: true })
+  ];
 
-  gulp.src(paths.css.src)
+  gulp.src([
+      './components/*.css',
+      './components/**/*.css'
+    ])
     .pipe(postcss(plugins))
-    .pipe(gulp.dest(paths.dest));
+    .pipe(gulp.dest('./lib'));
 
   cb()
 };
 
 function tsd(cb) {
-  gulp.src(paths.tsd.src)
-    .pipe(gulp.dest(paths.dest));
+  gulp.src('./components/**/*.d.ts')
+    .pipe(gulp.dest('./lib'));
 
   cb()
 };
